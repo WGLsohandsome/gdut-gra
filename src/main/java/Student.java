@@ -7,7 +7,7 @@ import java.util.*;
  * Date: 2022-10-17
  * Time: 15:41
  */
-class Speciality_mark{
+class Speciality_mark {
     Speciality tar = null;
     float mark = 0;
 }
@@ -15,8 +15,8 @@ class Speciality_mark{
 
 public class Student implements Comparable<Student> {
     int rank;
-    int numOfFavouriteSpeciality=0;
-    int numOfHateSpeciality=0;
+    int numOfFavouriteSpeciality = 0;
+    int numOfHateSpeciality = 0;
     int getNumOfEnrollmentTeamNum;
     String personality;
     float[] expectationToSpeciality;
@@ -28,7 +28,7 @@ public class Student implements Comparable<Student> {
     Speciality recruitedOne = null;
     Speciality_mark[] favouriteSpeciality = new Speciality_mark[6];
     Speciality_mark[] hateSpeciality = new Speciality_mark[6];
-    EnrollmentTeam[] registeredTeam = new EnrollmentTeam[6];
+    ArrayList<EnrollmentTeam> registeredTeam = new ArrayList<>();
 
     @Override
     public String toString() {
@@ -39,15 +39,16 @@ public class Student implements Comparable<Student> {
                 '}';
     }
 
-    private static int getNumArea1(Random random){
+    private static int getNumArea1(Random random) {
         int tag = random.nextInt(80000);
-        long tmp = tag* 4000000L;
+        long tmp = tag * 4000000L;
         int t = random.nextInt(2100);
-        int ret = (int) (((Math.log(tmp)-1)*2100+t-27000));
+        int ret = (int) (((Math.log(tmp) - 1) * 2100 + t - 27000));
 
-        return (int)ret;
+        return (int) ret;
     }
-    private static int getNumArea2(Random random, Stack<Integer> stack){
+
+    private static int getNumArea2(Random random, Stack<Integer> stack) {
 //        int tag = random.nextInt(43665);
 //        while (tag<3000){
 //            tag = random.nextInt(43665);
@@ -65,37 +66,34 @@ public class Student implements Comparable<Student> {
 //            }
 //        }
 //        return (int) (x1>0?x1*318-55000:x2*318-550000);
-        int tag=0,p=0,pos=0;
-        while (!stack.isEmpty()){
+        int tag = 0, p = 0, pos = 0;
+        while (!stack.isEmpty()) {
             tag = stack.pop();
-            p = tag-416;
-            if(p<0) continue;
-            pos = p/13;
-            if(pos<14) break;
+            p = tag - 416;
+            if (p < 0) continue;
+            pos = p / 13;
+            if (pos < 14) break;
         }
         int x = random.nextInt(2153);
-        int ret = (pos-1)*2153+28000+x;
+        int ret = (pos - 1) * 2153 + 28000 + x;
         return ret;
     }
 
-    public static int getNum(Random random, Stack<Integer> stack, int i){
+    public static int getNum(Random random, Stack<Integer> stack, int i) {
         int tag = random.nextInt(100);
-        if(i<=600){
+        if (i <= 600) {
             return getNumArea1(random);
         }
-        return getNumArea2(random,stack);
+        return getNumArea2(random, stack);
 
     }
-
-
-
 
 
     Student(Random random, Stack<Integer> stack, int num, Stack<Integer> stack1) {
         expectationToSpeciality = new float[4];
-        Arrays.fill(this.expectationToSpeciality,0);
+        Arrays.fill(this.expectationToSpeciality, 0);
 //        this.rank = getNum(random,stack,num);
-        this.rank = getRank(random,stack1);
+        this.rank = getRank(random, stack1);
         this.personality = createPersonality(random);
         getExpectationToSpeciality(random);
         for (int i = 0; i < 6; i++) {
@@ -116,8 +114,9 @@ public class Student implements Comparable<Student> {
         if (tag > 0.95) return "extremeRadical";
         return null;
     }
-//    根据性格判断专业的排名是否符合学生的排名
-    public Boolean isRankSuit(Speciality tar,Random random) {
+
+    //    根据性格判断专业的排名是否符合学生的排名
+    public Boolean isRankSuit(Speciality tar, Random random) {
 //        int rank = tar.exactNum;
 //        String Personality = this.personality;
 //        switch (Personality) {
@@ -143,14 +142,14 @@ public class Student implements Comparable<Student> {
 //                return false;
 //        }
         int tag = random.nextInt(5000);
-        return Math.abs(tar.exactNum-this.rank)<tag;
+        return Math.abs(tar.exactNum - this.rank) < tag;
     }
 
     private int getRank(Random random, Stack<Integer> stack1) {
-        while (!stack1.isEmpty()){
+        while (!stack1.isEmpty()) {
             int tag = stack1.pop();
-            if(tag<1500||tag>4500) continue;
-            return tag*9+random.nextInt(3000)+10000;
+            if (tag < 1500 || tag > 4500) continue;
+            return tag * 9 + random.nextInt(3000) + 10000;
         }
         return -1;
     }
@@ -166,38 +165,38 @@ public class Student implements Comparable<Student> {
         if (!this.hasTheVery) {
             float tmp = random.nextFloat();
             if (tmp < 0.01) {
-                int pos = Math.abs(random.nextInt()%35) ;
+                int pos = Math.abs(random.nextInt() % 35);
                 this.hasTheVery = true;
                 this.theVery = Tar[pos];
                 markToSpeciality = Float.MAX_VALUE;
             }
         }
         for (int i = 0; i < 35; i++) {
-            if (!isRankSuit(Tar[i],random)&&!this.hasTheVery) {
+            if (!isRankSuit(Tar[i], random) && !this.hasTheVery) {
                 continue;
             } else {
                 markToSpeciality = getMarkToSpeciality(Tar[i]);
             }
-            if(markToSpeciality>0){
-                if(this.numOfFavouriteSpeciality<6){
+            if (markToSpeciality > 0) {
+                if (this.numOfFavouriteSpeciality < 6) {
                     this.favouriteSpeciality[this.numOfFavouriteSpeciality].tar = Tar[i];
                     this.favouriteSpeciality[this.numOfFavouriteSpeciality].mark = markToSpeciality;
                     this.numOfFavouriteSpeciality++;
-                }else {
-                      int pos = findLowestMarkPos();
-                      if(markToSpeciality > this.favouriteSpeciality[pos].mark){
-                          this.favouriteSpeciality[pos].tar = Tar[i];
-                          this.favouriteSpeciality[pos].mark = markToSpeciality;
-                      }
+                } else {
+                    int pos = findLowestMarkPos();
+                    if (markToSpeciality > this.favouriteSpeciality[pos].mark) {
+                        this.favouriteSpeciality[pos].tar = Tar[i];
+                        this.favouriteSpeciality[pos].mark = markToSpeciality;
+                    }
                 }
-            }else {
-                if(this.numOfHateSpeciality<6){
+            } else {
+                if (this.numOfHateSpeciality < 6) {
                     this.hateSpeciality[this.numOfHateSpeciality].tar = Tar[i];
                     this.hateSpeciality[this.numOfHateSpeciality].mark = markToSpeciality;
                     this.numOfHateSpeciality++;
-                }else {
+                } else {
                     int pos = findLowestMarkPos();
-                    if(markToSpeciality < this.favouriteSpeciality[pos].mark){
+                    if (markToSpeciality < this.favouriteSpeciality[pos].mark) {
                         this.favouriteSpeciality[pos].tar = Tar[i];
                         this.favouriteSpeciality[pos].mark = markToSpeciality;
                     }
@@ -210,7 +209,7 @@ public class Student implements Comparable<Student> {
         float tmp = this.favouriteSpeciality[0].mark;
         int pos = 0;
         for (int i = 1; i < this.favouriteSpeciality.length; i++) {
-            if(tmp < this.favouriteSpeciality[i].mark){
+            if (tmp < this.favouriteSpeciality[i].mark) {
                 tmp = this.favouriteSpeciality[i].mark;
                 pos = i;
             }
@@ -218,13 +217,13 @@ public class Student implements Comparable<Student> {
         return pos;
     }
 
-    private float getMarkToSpeciality(Speciality speciality){
+    private float getMarkToSpeciality(Speciality speciality) {
         float sum = 0;
-        int[] tag = {10,20,30,20,20};
+        int[] tag = {10, 20, 30, 20, 20};
         for (int i = 0; i < this.expectationToSpeciality.length; i++) {
-            sum+=  speciality.Features[i] - this.expectationToSpeciality[i];
+            sum += speciality.Features[i] - this.expectationToSpeciality[i];
         }
-        return  sum;
+        return sum;
     }
     //    public int findPos(Speciality_mark[] Tar,float markToSpeciality){
 //        if(markToSpeciality>0){
@@ -248,7 +247,7 @@ public class Student implements Comparable<Student> {
 //            return pos;
 //        }
 
-//    如果对这个专业的评分大于0就认为可能是喜欢的专业,小于0就表示可能是不喜欢的专业
+    //    如果对这个专业的评分大于0就认为可能是喜欢的专业,小于0就表示可能是不喜欢的专业
     private void insertSpecialty(Speciality_mark[] favouriteSpeciality, Speciality_mark[] hateSpeciality, float markToSpeciality, Speciality speciality) {
         if (markToSpeciality > 0) {
 //            先往里面填六个,不然回有空指针访问的bug
@@ -277,15 +276,15 @@ public class Student implements Comparable<Student> {
         }
     }
 
-    public void getEnrollmentTeam(ArrayList<EnrollmentTeam> enrollmentTeamToRegister){
+    public void getEnrollmentTeam(ArrayList<EnrollmentTeam> enrollmentTeamToRegister) {
 //        如果专业组里有学生认定的专业,不考虑其他因素.直接报名,所以先遍历专业组看有没有那个专业
         PriorityQueue<Float> queue = new PriorityQueue<>();
-        HashMap<Float,Integer> map = new HashMap<>();
+        HashMap<Float, Integer> map = new HashMap<>();
         int n = 0;
-        if(this.hasTheVery){
+        if (this.hasTheVery) {
             for (EnrollmentTeam enrollmentTeam : enrollmentTeamToRegister) {
                 if (enrollmentTeam.isContainSpeciality(this.theVery)) {
-                    this.registeredTeam[0] = enrollmentTeam;
+                    this.registeredTeam.add(0, enrollmentTeam);
 //                    System.out.print("有唯一喜欢的专业");
                     n++;
                 }
@@ -294,21 +293,21 @@ public class Student implements Comparable<Student> {
 //       找完最喜欢的专业之后就开始对所有的专业组进行一个遍历,看下是否合适,取一个标准值,最多选出最牛逼的六个
         float[][] marks = new float[2][enrollmentTeamToRegister.size()];
 //        找到学生可能会报的所有专业组,只要mark>0就认为有可能报名
-        for (int i = 0;i < enrollmentTeamToRegister.size();i++) {
+        for (int i = 0; i < enrollmentTeamToRegister.size(); i++) {
             boolean isWillingToRegister = false;
             float markToEnrollmentTeam = 0;
             markToEnrollmentTeam = getMark(enrollmentTeamToRegister.get(i));
-            if(markToEnrollmentTeam>0) isWillingToRegister = true;
+            if (markToEnrollmentTeam > 0) isWillingToRegister = true;
             if (isWillingToRegister) {
                 queue.add(markToEnrollmentTeam);
-                map.put(markToEnrollmentTeam,i);
+                map.put(markToEnrollmentTeam, i);
             }
         }
 //      找前六个专业组,可能找不到,找不到就认为这个学生和广工不得缘分
-        while (!queue.isEmpty()){
+        while (!queue.isEmpty()) {
             float tmp = queue.poll();
             int pos = map.get(tmp);
-            this.registeredTeam[n] = enrollmentTeamToRegister.get(pos);
+            this.registeredTeam.add(enrollmentTeamToRegister.get(pos));
             n++;
 //            System.out.print(tmp+" ");
         }
@@ -319,9 +318,8 @@ public class Student implements Comparable<Student> {
     }
 
 
-
-    public void getExpectationToSpeciality(Random random){
-        int num = this.rank/10000;
+    public void getExpectationToSpeciality(Random random) {
+        int num = this.rank / 10000;
 //        while (num>0){
 //            int pos = random.nextInt()%5;
 //            while (pos<0) pos = random.nextInt()%5;
@@ -343,18 +341,18 @@ public class Student implements Comparable<Student> {
 //        }
         for (int i = 0; i < this.expectationToSpeciality.length; i++) {
             int tag = random.nextInt() % 6;
-            if (tag<0) {
+            if (tag < 0) {
                 tag = Math.abs(tag);
             }
-            if (tag<=num) {
-                float t =  (float) (random.nextFloat()%0.7);
-                while (t<0.3){
-                    t =  (float) (random.nextFloat()%0.7);
+            if (tag <= num) {
+                float t = (float) (random.nextFloat() % 0.7);
+                while (t < 0.3) {
+                    t = (float) (random.nextFloat() % 0.7);
                 }
                 this.expectationToSpeciality[i] = t;
-            }else {
+            } else {
                 float tmp = random.nextFloat();
-                while (tmp<0.7){
+                while (tmp < 0.7) {
                     tmp = random.nextFloat();
                 }
                 this.expectationToSpeciality[i] = tmp;
@@ -362,28 +360,28 @@ public class Student implements Comparable<Student> {
         }
     }
 
-    public  void quickSortFavouriteSpeciality(Speciality_mark[] arr,int low,int high){
-        int i,j;
-        Speciality_mark temp,t;
-        if(low>high){
+    public void quickSortFavouriteSpeciality(Speciality_mark[] arr, int low, int high) {
+        int i, j;
+        Speciality_mark temp, t;
+        if (low > high) {
             return;
         }
-        i=low;
-        j=high;
+        i = low;
+        j = high;
         //temp就是基准位
         temp = arr[low];
 
-        while (i<j) {
+        while (i < j) {
             //先看右边，依次往左递减
-            while (temp.mark>=arr[j].mark&&i<j) {
+            while (temp.mark >= arr[j].mark && i < j) {
                 j--;
             }
             //再看左边，依次往右递增
-            while (temp.mark<=arr[i].mark&&i<j) {
+            while (temp.mark <= arr[i].mark && i < j) {
                 i++;
             }
             //如果满足条件则交换
-            if (i<j) {
+            if (i < j) {
                 t = arr[j];
                 arr[j] = arr[i];
                 arr[i] = t;
@@ -394,33 +392,33 @@ public class Student implements Comparable<Student> {
         arr[low] = arr[i];
         arr[i] = temp;
         //递归调用左半数组
-        quickSortFavouriteSpeciality(arr, low, j-1);
+        quickSortFavouriteSpeciality(arr, low, j - 1);
         //递归调用右半数组
-        quickSortFavouriteSpeciality(arr, j+1, high);
+        quickSortFavouriteSpeciality(arr, j + 1, high);
     }
 
-    public  void quickSortHateSpeciality(Speciality_mark[] arr,int low,int high){
-        int i,j;
-        Speciality_mark temp,t;
-        if(low>high){
+    public void quickSortHateSpeciality(Speciality_mark[] arr, int low, int high) {
+        int i, j;
+        Speciality_mark temp, t;
+        if (low > high) {
             return;
         }
-        i=low;
-        j=high;
+        i = low;
+        j = high;
         //temp就是基准位
         temp = arr[low];
 
-        while (i<j) {
+        while (i < j) {
             //先看右边，依次往左递减
-            while (temp.mark<=arr[j].mark&&i<j) {
+            while (temp.mark <= arr[j].mark && i < j) {
                 j--;
             }
             //再看左边，依次往右递增
-            while (temp.mark>=arr[i].mark&&i<j) {
+            while (temp.mark >= arr[i].mark && i < j) {
                 i++;
             }
             //如果满足条件则交换
-            if (i<j) {
+            if (i < j) {
                 t = arr[j];
                 arr[j] = arr[i];
                 arr[i] = t;
@@ -431,72 +429,72 @@ public class Student implements Comparable<Student> {
         arr[low] = arr[i];
         arr[i] = temp;
         //递归调用左半数组
-        quickSortFavouriteSpeciality(arr, low, j-1);
+        quickSortFavouriteSpeciality(arr, low, j - 1);
         //递归调用右半数组
-        quickSortFavouriteSpeciality(arr, j+1, high);
+        quickSortFavouriteSpeciality(arr, j + 1, high);
     }
 
 
-    public void judgeIsWillingToAdjust(){
+    public void judgeIsWillingToAdjust() {
         this.tagToAdjustment = new Boolean[this.getNumOfEnrollmentTeamNum];
         for (int i = 0; i < this.getNumOfEnrollmentTeamNum; i++) {
-            tagToAdjustment[i] = judgeIsWillingAdjustToTeam(this.registeredTeam[i]);
+            tagToAdjustment[i] = judgeIsWillingAdjustToTeam(this.registeredTeam.get(i));
 
         }
     }
 
-    private Boolean judgeIsWillingAdjustToTeam(EnrollmentTeam team){
+    private Boolean judgeIsWillingAdjustToTeam(EnrollmentTeam team) {
         return isWillingToAdjustByFeatures(team) && isWillingToAdjustByVariance(team);
 
 
     }
 
-    private Boolean isWillingToAdjustByFeatures(EnrollmentTeam team){
+    private Boolean isWillingToAdjustByFeatures(EnrollmentTeam team) {
         int numOfFavouriteSpecialityInTeam = 0;
         float[] featuresOfLikeSpeciality = new float[4];
         float[] featuresOfElseSpeciality = new float[4];
         float[] tag = new float[4];
         for (int i = 0; i < team.specialities.size(); i++) {
             for (int j = 0; j < this.numOfFavouriteSpeciality; j++) {
-                if(team.specialities.get(i).name.equals(this.favouriteSpeciality[j].tar.name)){
+                if (team.specialities.get(i).name.equals(this.favouriteSpeciality[j].tar.name)) {
                     for (int k = 0; k < featuresOfLikeSpeciality.length; k++) {
-                        featuresOfLikeSpeciality[k]+=this.favouriteSpeciality[j].tar.Features[k];
+                        featuresOfLikeSpeciality[k] += this.favouriteSpeciality[j].tar.Features[k];
                     }
                     numOfFavouriteSpecialityInTeam++;
-                }else {
+                } else {
                     for (int k = 0; k < featuresOfLikeSpeciality.length; k++) {
-                        featuresOfElseSpeciality[k]+= team.specialities.get(i).Features[k];
+                        featuresOfElseSpeciality[k] += team.specialities.get(i).Features[k];
                     }
                 }
             }
         }
 
-        int numOfElseSpecialityInTeam = team.specialities.size()-numOfFavouriteSpecialityInTeam;
-        float likePer = (float) numOfFavouriteSpecialityInTeam/team.specialities.size();
-        float ElsePer = (float) numOfElseSpecialityInTeam/team.specialities.size();
+        int numOfElseSpecialityInTeam = team.specialities.size() - numOfFavouriteSpecialityInTeam;
+        float likePer = (float) numOfFavouriteSpecialityInTeam / team.specialities.size();
+        float ElsePer = (float) numOfElseSpecialityInTeam / team.specialities.size();
         float sum = 0;
         for (int i = 0; i < tag.length; i++) {
-            tag[i] = featuresOfElseSpeciality[i]*likePer+featuresOfElseSpeciality[i]*likePer;
+            tag[i] = featuresOfElseSpeciality[i] * likePer + featuresOfElseSpeciality[i] * likePer;
             sum += tag[i] - this.expectationToSpeciality[i];
         }
-        if(sum<0) return false;
+        if (sum < 0) return false;
         return true;
     }
 
-    private Boolean isWillingToAdjustByVariance(EnrollmentTeam team){
+    private Boolean isWillingToAdjustByVariance(EnrollmentTeam team) {
         Random random = new Random();
-        int tag = random.nextInt()%100;
-        if(team.markVariance*1000>tag) return false;
+        int tag = random.nextInt() % 100;
+        if (team.markVariance * 1000 > tag) return false;
         return true;
     }
 
 
     @Override
     public int compareTo(Student o) {
-        return o.rank-this.rank;
+        return o.rank - this.rank;
     }
 
-    private float getMark(EnrollmentTeam team){
+    private float getMark(EnrollmentTeam team) {
         float ret = 0;
         for (int j = 0; j < this.numOfFavouriteSpeciality; j++) {
             if (team.isContainSpeciality(this.favouriteSpeciality[j].tar)) {
@@ -509,5 +507,36 @@ public class Student implements Comparable<Student> {
             }
         }
         return ret;
+    }
+
+    private boolean judgeTeam(EnrollmentTeam team) {
+        Random random = new Random();
+        int unacceptableNum = 0;
+        for (int i = 0; i < this.numOfFavouriteSpeciality; i++) {
+            if (!team.isContainSpeciality(this.favouriteSpeciality[i].tar)) {
+                int lowerNum = 0;
+                for (int j = 0; j < this.favouriteSpeciality[i].tar.Features.length; j++) {
+                    if (this.favouriteSpeciality[i].tar.Features[j] - this.expectationToSpeciality[j] > 0) {
+                        lowerNum++;
+                    }
+                }
+                int tag = random.nextInt(5);
+                if (tag <= lowerNum) unacceptableNum++;
+            }
+        }
+        double tag =  Math.sin(unacceptableNum*Math.PI/10);
+        double tmp = random.nextDouble();
+        return tmp < tag;
+    }
+
+    public void abortTeam() {
+        for (int i = 0; i < this.registeredTeam.size(); i++) {
+            if (judgeTeam(this.registeredTeam.get(i))) {
+                System.out.println(this.registeredTeam.get(i).name + "删了");
+                this.registeredTeam.remove(i);
+                this.getNumOfEnrollmentTeamNum--;
+            }
+            System.out.println("");
+        }
     }
 }

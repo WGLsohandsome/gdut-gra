@@ -170,22 +170,22 @@ public class Dao {
     }
 
 
-    public void matchStudentToTeam(EnrollmentTeam[] enrollmentTeams,Student[] students){
-// 每个学生六个专业组，招生招六轮
-        for (int round = 0; round < 6; round++) {
-            for (int teamNum = 0; teamNum < enrollmentTeams.length; teamNum++) {
-                for (int studentNum = 1; studentNum < students.length; studentNum++) {
-                    if(students[studentNum].registeredTeam[round]==enrollmentTeams[teamNum]&&!students[studentNum].isRecurited){
-                        if(enrollmentTeams[teamNum].hasRecruitedStudentNum<enrollmentTeams[teamNum].toRecruitStudentNum){
-                            enrollmentTeams[teamNum].studentToRecruit[enrollmentTeams[teamNum].hasRecruitedStudentNum] = students[studentNum];
-                            enrollmentTeams[teamNum].hasRecruitedStudentNum++;
-                            students[studentNum].isRecurited = true;
-                        }
-                    }
-                }
-            }
-        }
-    }
+//    public void matchStudentToTeam(EnrollmentTeam[] enrollmentTeams,Student[] students){
+//// 每个学生六个专业组，招生招六轮
+//        for (int round = 0; round < 6; round++) {
+//            for (int teamNum = 0; teamNum < enrollmentTeams.length; teamNum++) {
+//                for (int studentNum = 1; studentNum < students.length; studentNum++) {
+//                    if(students[studentNum].registeredTeam[round]==enrollmentTeams[teamNum]&&!students[studentNum].isRecurited){
+//                        if(enrollmentTeams[teamNum].hasRecruitedStudentNum<enrollmentTeams[teamNum].toRecruitStudentNum){
+//                            enrollmentTeams[teamNum].studentToRecruit[enrollmentTeams[teamNum].hasRecruitedStudentNum] = students[studentNum];
+//                            enrollmentTeams[teamNum].hasRecruitedStudentNum++;
+//                            students[studentNum].isRecurited = true;
+//                        }
+//                    }
+//                }
+//            }
+//        }
+//    }
 
     public void getSpecialityToStudent(Student[] Tar,Speciality[] Source){
         Random random = new Random();
@@ -219,22 +219,22 @@ public class Dao {
 
     public void getEnrollmentTeam(ArrayList<EnrollmentTeam> enrollmentTeams,Speciality[] specialities){
         Scanner scanner = new Scanner(System.in);
-        for (int i = 0; i < 1; i++) {
+        for (int i = 0; i < 9; i++) {
             EnrollmentTeam team = new EnrollmentTeam();
-//            String[] rec = scanner.nextLine().split(" ");
-//            team.name = rec[0];
-//            for (int k = 1; k < rec.length; k++) {
-//                for (int j = 0; j < specialities.length; j++) {
-//                    if(rec[k].equals(specialities[j].name)){
-//                        team.specialities.add(specialities[j]);
-//                    }
-//                }
-//            }
-//            team.specialtyNum = rec.length-1;
-//            enrollmentTeams.add(team);
-            team.specialities.addAll(Arrays.asList(specialities));
-            team.specialtyNum = specialities.length;
+            String[] rec = scanner.nextLine().split(" ");
+            team.name = rec[0];
+            for (int k = 1; k < rec.length; k++) {
+                for (int j = 0; j < specialities.length; j++) {
+                    if(rec[k].equals(specialities[j].name)){
+                        team.specialities.add(specialities[j]);
+                    }
+                }
+            }
+            team.specialtyNum = rec.length-1;
             enrollmentTeams.add(team);
+//            team.specialities.addAll(Arrays.asList(specialities));
+//            team.specialtyNum = specialities.length;
+//            enrollmentTeams.add(team);
 
         }
 
@@ -261,7 +261,7 @@ public class Dao {
         for (int i = 0; i < students.length; i++) {
             if(!students[i].isRecurited){
                 if(students[i].hasTheVery){
-                    EnrollmentTeam theVery = students[i].registeredTeam[0];
+                    EnrollmentTeam theVery = students[i].registeredTeam.get(0);
                     for (int j = 0; j < enrollmentTeams.size(); j++) {
                         if(enrollmentTeams.get(j)==theVery){
                             enrollmentTeams.get(j).AddStudentToTeam(students[i]);
@@ -269,7 +269,7 @@ public class Dao {
                     }
                     if(!students[i].isRecurited){
                         for (int j = students[i].getNumOfEnrollmentTeamNum-1; j >=1 && !students[i].isRecurited; j--) {
-                            EnrollmentTeam tar = students[i].registeredTeam[j];
+                            EnrollmentTeam tar = students[i].registeredTeam.get(j);
                             for (int k = 0; k < enrollmentTeams.size(); k++) {
                                 if(tar== enrollmentTeams.get(j)){
                                     enrollmentTeams.get(j).AddStudentToTeam(students[i]);
@@ -279,7 +279,7 @@ public class Dao {
                     }
                 }else {
                     for (int j = students[i].getNumOfEnrollmentTeamNum-1; j >=0 && !students[i].isRecurited; j--) {
-                        EnrollmentTeam tar = students[i].registeredTeam[j];
+                        EnrollmentTeam tar = students[i].registeredTeam.get(j);
                         for (int k = 0; k < enrollmentTeams.size(); k++) {
                             if(tar== enrollmentTeams.get(k)){
                                 enrollmentTeams.get(k).AddStudentToTeam(students[i]);
@@ -384,7 +384,7 @@ public class Dao {
             Student tmp = students[i];
             if(tmp.isRecruitedGdut) continue;
             for (int j = 0; j < tmp.getNumOfEnrollmentTeamNum; j++) {
-                tmp.registeredTeam[j].recruitStudent(tmp,tmp.tagToAdjustment[j]);
+                tmp.registeredTeam.get(j).recruitStudent(tmp,tmp.tagToAdjustment[j]);
                 if(tmp.isRecruitedGdut) break;
             }
         }
@@ -608,10 +608,10 @@ public class Dao {
             if (!students[i].isRecruitedGdut) {
                 for (int j = 0; j < students[i].getNumOfEnrollmentTeamNum; j++) {
                     if(students[i].tagToAdjustment[j]){
-                        for (int k = 0; k < students[i].registeredTeam[j].specialities.size(); k++) {
-                            if(students[i].registeredTeam[j].specialities.get(k).numToRecruit>
-                                    students[i].registeredTeam[j].specialities.get(k).officiallyRecruitedStudent.size()){
-                                students[i].registeredTeam[j].specialities.get(k).addStudent(students[i]);
+                        for (int k = 0; k < students[i].registeredTeam.get(j).specialities.size(); k++) {
+                            if(students[i].registeredTeam.get(j).specialities.get(k).numToRecruit>
+                                    students[i].registeredTeam.get(j).specialities.get(k).officiallyRecruitedStudent.size()){
+                                students[i].registeredTeam.get(j).specialities.get(k).addStudent(students[i]);
                             }
                             if(students[i].isRecruitedGdut) continue;
                         }
@@ -624,6 +624,14 @@ public class Dao {
 
         }
     }
+
+    public void abortTeam(Student[] students){
+        for (int i = 0; i < students.length; i++) {
+            students[i].abortTeam();
+        }
+    }
+
+
 
 }
 

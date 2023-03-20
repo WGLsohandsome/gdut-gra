@@ -40,6 +40,7 @@ public class Test {
             stack1.add(tmp);
         }
         Scanner scanner = new Scanner(System.in);
+
         dao.getSpeciallity(Tar);
         dao.getSpecialityFeatrues(Tar);
         System.out.println(" ");
@@ -59,6 +60,7 @@ public class Test {
 //        dao.showStudentDistribution(Tar,toTest);
             dao.getEnrollmentTeam(toRecruit,Tar);
             dao.studentRegisterToTeam(toTest,toRecruit);
+            dao.abortTeam(toTest);
 //            dao.studentsAddToTeam(toTest,toRecruit);
 //        dao.showEnrollmentTeamInf(toRecurit);
             dao.getEnrollmentTeamsV(toRecruit);

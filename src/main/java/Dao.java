@@ -1,7 +1,5 @@
-import java.io.IOException;
+import java.io.*;
 import java.util.*;
-
-import java.io.FileOutputStream;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
@@ -22,23 +20,20 @@ import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 public class Dao {
 
 //    初始化专业数据
-    public  void getSpeciallity(Speciality[] Tar){
+    public  void getSpeciallity(Speciality[] Tar) throws IOException {
         int n = 0;
         Scanner scanner = new Scanner(System.in);
+        BufferedReader reader = new BufferedReader(new FileReader("specialityInf2020.txt"));
         while (n<35){
             Tar[n] = new Speciality();
-            String rec= scanner.next();
-            Tar[n].academy = rec;
-            rec = scanner.next();
-            Tar[n].name = rec;
-            rec = scanner.next();
-            int recuritNum = Integer.parseInt(rec);
+            String[] rec= reader.readLine().split(" ");
+            Tar[n].academy = rec[0];
+            Tar[n].name = rec[1];
+            int recuritNum = Integer.parseInt(rec[2]);
             Tar[n].numToRecruit = recuritNum;
             Tar[n].recruitedStudent = new Student[recuritNum];
-            rec = scanner.next();
-            Tar[n].exactNum = Integer.parseInt(rec);
-            rec = scanner.next();
-            Tar[n].lowestRank = Integer.parseInt(rec);
+            Tar[n].exactNum = Integer.parseInt(rec[3]);
+            Tar[n].lowestRank = Integer.parseInt(rec[4]);
             n++;
 //            for (int i = 0; i < 4; i++) {
 //                rec = scanner.next();
@@ -78,15 +73,16 @@ public class Dao {
         }
     }
 //     得到专业的各指标
-    public void getSpecialityFeatrues(Speciality[] Tar){
+    public void getSpecialityFeatrues(Speciality[] Tar) throws IOException {
         Academy[] academies = new Academy[17];
+        BufferedReader reader = new BufferedReader(new FileReader("academyInf2.txt"));
         Scanner scanner = new Scanner(System.in);
         for (int i = 0; i < 17; ++i) {
             academies[i] = new Academy();
-            String name = scanner.next();
-            academies[i].name = name;
+            String[] name = reader.readLine().split(" ");
+            academies[i].name = name[0];
             for (int j = 0; j < 4; j++) {
-                String feature = scanner.next();
+                String feature = name[j+1];
                 academies[i].featrues[j] = (Float.parseFloat(feature)/100);
             }
         }
@@ -217,26 +213,42 @@ public class Dao {
         }
     }
 
-    public void getEnrollmentTeam(ArrayList<EnrollmentTeam> enrollmentTeams,Speciality[] specialities){
+    public void getEnrollmentTeam(ArrayList<EnrollmentTeam> enrollmentTeams, Speciality[] specialities, String[] names){
         Scanner scanner = new Scanner(System.in);
-        for (int i = 0; i < 9; i++) {
-            EnrollmentTeam team = new EnrollmentTeam();
-            String[] rec = scanner.nextLine().split(" ");
-            team.name = rec[0];
-            for (int k = 1; k < rec.length; k++) {
-                for (int j = 0; j < specialities.length; j++) {
-                    if(rec[k].equals(specialities[j].name)){
-                        team.specialities.add(specialities[j]);
-                    }
-                }
-            }
-            team.specialtyNum = rec.length-1;
-            enrollmentTeams.add(team);
-//            team.specialities.addAll(Arrays.asList(specialities));
-//            team.specialtyNum = specialities.length;
+////        学院
+//        for (int i = 0; i < 17; i++) {
+//            EnrollmentTeam enrollmentTeam = new EnrollmentTeam();
+//            enrollmentTeam.name = names[i];
+//            enrollmentTeams.add(enrollmentTeam);
+//        }
+//        for (int i = 0; i < specialities.length; i++) {
+//            for (int j = 0; j < enrollmentTeams.size(); j++) {
+//                if(specialities[i].academy.equals(enrollmentTeams.get(j).name)){
+//                    enrollmentTeams.get(j).specialities.add(specialities[i]);
+//                }
+//            }
+//        }
+//        小组
+//        for (int i = 0; i < 9; i++) {
+//            EnrollmentTeam team = new EnrollmentTeam();
+//            String[] rec = scanner.nextLine().split(" ");
+//            team.name = rec[0];
+//            for (int k = 1; k < rec.length; k++) {
+//                for (int j = 0; j < specialities.length; j++) {
+//                    if(rec[k].equals(specialities[j].name)){
+//                        team.specialities.add(specialities[j]);
+//                    }
+//                }
+//            }
+//            team.specialtyNum = rec.length-1;
 //            enrollmentTeams.add(team);
+//        }
+//        大组
+        EnrollmentTeam enrollmentTeam = new EnrollmentTeam();
+        enrollmentTeam.specialities.addAll(Arrays.asList(specialities));
+        enrollmentTeams.add(enrollmentTeam);
+        enrollmentTeam.specialtyNum = specialities.length;
 
-        }
 
 
 
@@ -368,14 +380,7 @@ public class Dao {
     public void judgeStudentAdjustment(Student[] students){
         for (int i = 0; i < students.length; i++) {
             students[i].judgeIsWillingToAdjust();
-//            for (int j = 0; j < students[i].getNumOfEnrollmentTeamNum; j++) {
-//                if(students[i].tagToAdjustment[j]){
-//                    System.out.print("是 ");
-//                }else {
-//                    System.out.print("否 ");
-//                }
-//            }
-//            System.out.println(students[i].getNumOfEnrollmentTeamNum);
+//
         }
     }
 
@@ -408,7 +413,7 @@ public class Dao {
 
         //超大excel文件写入使用SXSSFWorkbook对象
         try (Workbook workbook = new SXSSFWorkbook();
-             FileOutputStream out = new FileOutputStream("E:\\RecruitStudent4.2\\Data.xlsx")) {
+             FileOutputStream out = new FileOutputStream("E:\\RecruitStudent5.0\\Data.xlsx")) {
 
             // 创建新的工作簿
             Sheet sheet = workbook.createSheet("1");
@@ -485,7 +490,7 @@ public class Dao {
             e.printStackTrace();
         }
         try (Workbook workbook = new SXSSFWorkbook();
-             FileOutputStream out = new FileOutputStream("E:\\RecruitStudent4.2\\SpecialityFeatures.xlsx")) {
+             FileOutputStream out = new FileOutputStream("E:\\RecruitStudent5.0\\SpecialityFeatures.xlsx")) {
 
             Sheet sheet = workbook.createSheet("1");
 
@@ -575,6 +580,7 @@ public class Dao {
                 name) {
             ArrayList<Speciality> list = map.get(s);
             int sum = 0;
+            if(list==null) continue;
             for (Speciality speciality : list) {
                 sum += speciality.exactNum;
             }

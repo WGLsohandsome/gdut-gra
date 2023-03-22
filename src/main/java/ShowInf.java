@@ -51,7 +51,7 @@ public class ShowInf {
 
     public void showSpecialityStudentInf(Speciality[] specialities,InfCollector[] infCollectors) {
         try (Workbook workbook = new SXSSFWorkbook();
-             FileOutputStream out = new FileOutputStream("E:\\RecruitStudent4.2\\result.xlsx")) {
+             FileOutputStream out = new FileOutputStream("E:\\RecruitStudent5.0\\result.xlsx")) {
 
             // 创建新的工作簿
             Sheet sheet = workbook.createSheet("1");
@@ -64,6 +64,8 @@ public class ShowInf {
             cell3.setCellValue("平均排位");
             Cell cell4 = row.createCell(4);
             cell4.setCellValue("真实平均排位");
+            Cell cell5 = row.createCell(5);
+            cell5.setCellValue("真实最低排位");
 
 
             for (int i = 0; i < specialities.length; i++) {
@@ -87,9 +89,11 @@ public class ShowInf {
                     cell.setCellValue((float)sum/specialities[i].officiallyRecruitedStudent.size());
                     cell = row1.createCell(4);
                     cell.setCellValue(specialities[i].exactNum);
+                    cell = row1.createCell(5);
+                    cell.setCellValue(specialities[i].lowestRank);
                     System.out.print(" "+specialities[i].officiallyRecruitedStudent.get(0).rank+" "+specialities[i].officiallyRecruitedStudent.get(specialities[i].officiallyRecruitedStudent.size()-1).rank);
                     System.out.print(" "+sum/specialities[i].officiallyRecruitedStudent.size());
-                    cell = row1.createCell(5);
+                    cell = row1.createCell(6);
                     if(specialities[i].officiallyRecruitedStudent.size()==specialities[i].numToRecruit){
                         System.out.print(" 招满了" );
                         cell.setCellValue("招满");

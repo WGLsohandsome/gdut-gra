@@ -184,44 +184,11 @@ public class EnrollmentTeam {
         Student abandonedOne = null;
         for (int i = 0; i < student.numOfFavouriteSpeciality; i++) {
             Speciality tar = student.favouriteSpeciality[i].tar;
-            Boolean isFind = false;
             for (int j = 0; j < this.specialities.size(); j++) {
                 if(tar.name.equals(this.specialities.get(j).name)){
                     this.specialities.get(j).addStudent(student);
-                    isFind = true;
-                }
-                if(student.isRecruitedGdut) {
-                    student.recruitedOne = this.specialities.get(j);
-                    break;
-                }
-                if(isFind){
-                    break;
                 }
             }
-//            if(student.isRecruitedGdut) {
-//                this.map.put(student,isWillingToAdjust);
-//                break;
-//            }
         }
-//        调剂的模块
-//        if(!student.isRecruitedGdut&&isWillingToAdjust){
-//            for (int i = 0; i < this.specialities.size(); i++) {
-//                this.specialities.get(i).addStudent(student);
-//                if(student.isRecruitedGdut) {
-//                    this.map.put(student, true);
-//                    break;
-//                }
-//            }
-//        }
-//        if(abandonedOne!=null){
-//            Boolean judge = this.map.get(abandonedOne);
-//            recruitStudent(abandonedOne,judge);
-//        }
-
-
-
     }
-
-
-
 }

@@ -81,9 +81,9 @@ public class Student implements Comparable<Student> {
 
     public static int getNum(Random random, Stack<Integer> stack, int i) {
         int tag = random.nextInt(100);
-        if (i <= 600) {
-            return getNumArea1(random);
-        }
+//        if (i <= 1000) {
+//            return getNumArea1(random);
+//        }
         return getNumArea2(random, stack);
 
     }
@@ -117,30 +117,6 @@ public class Student implements Comparable<Student> {
 
     //    根据性格判断专业的排名是否符合学生的排名
     public Boolean isRankSuit(Speciality tar, Random random) {
-//        int rank = tar.exactNum;
-//        String Personality = this.personality;
-//        switch (Personality) {
-//            case "common":
-//                return  this.rank <= rank;
-//            case "cautious":
-//                return this.rank + 1000 < rank;
-//            case "extremeCautious":
-//                return this.rank + 2000 < rank;
-//            case "radical":
-//                    if(this.rank<rank){
-//                        return true;
-//                    }else {
-//                        return rank + 2000 > this.rank ;
-//                    }
-//            case "extremeRadical":
-//                    if(this.rank<rank){
-//                         return true;
-//                    }else {
-//                        return rank + 5000 > this.rank ;
-//                    }
-//            default:
-//                return false;
-//        }
         int tag = random.nextInt(5000);
         return Math.abs(tar.exactNum - this.rank) < tag;
     }
@@ -148,9 +124,11 @@ public class Student implements Comparable<Student> {
     private int getRank(Random random, Stack<Integer> stack1) {
         while (!stack1.isEmpty()) {
             int tag = stack1.pop();
-            if (tag < 1500 || tag > 4500) continue;
-            return tag * 9 + random.nextInt(3000) + 10000;
+            if (tag < 2000 || tag > 4000) continue;
+            return tag * 25 + random.nextInt(2000) - 28000;
+//            return tag;
         }
+
         return -1;
     }
 
@@ -166,13 +144,15 @@ public class Student implements Comparable<Student> {
             float tmp = random.nextFloat();
             if (tmp < 0.01) {
                 int pos = Math.abs(random.nextInt() % 35);
-                this.hasTheVery = true;
-                this.theVery = Tar[pos];
-                markToSpeciality = Float.MAX_VALUE;
+                if (isRankSuit(Tar[pos], random)) {
+                    this.hasTheVery = true;
+                    this.theVery = Tar[pos];
+                    markToSpeciality = Float.MAX_VALUE;
+                }
             }
         }
         for (int i = 0; i < 35; i++) {
-            if (!isRankSuit(Tar[i], random) && !this.hasTheVery) {
+            if (!isRankSuit(Tar[i], random)) {
                 continue;
             } else {
                 markToSpeciality = getMarkToSpeciality(Tar[i]);
@@ -197,12 +177,24 @@ public class Student implements Comparable<Student> {
                 } else {
                     int pos = findLowestMarkPos();
                     if (markToSpeciality < this.favouriteSpeciality[pos].mark) {
-                        this.favouriteSpeciality[pos].tar = Tar[i];
-                        this.favouriteSpeciality[pos].mark = markToSpeciality;
+                        this.hateSpeciality[pos].tar = Tar[i];
+                        this.hateSpeciality[pos].mark = markToSpeciality;
                     }
                 }
             }
         }
+    }
+
+    private int findHighestMarkPos() {
+        float tmp = this.hateSpeciality[0].mark;
+        int pos = 0;
+        for (int i = 1; i < this.hateSpeciality.length; i++) {
+            if (tmp > this.hateSpeciality[i].mark) {
+                tmp = this.hateSpeciality[i].mark;
+                pos = i;
+            }
+        }
+        return pos;
     }
 
     private int findLowestMarkPos() {
@@ -510,23 +502,47 @@ public class Student implements Comparable<Student> {
     }
 
     private boolean judgeTeam(EnrollmentTeam team) {
+//        Random random = new Random();
+//        int unacceptableNum = 0;
+//        for (int i = 0; i < this.numOfFavouriteSpeciality; i++) {
+//            if (!team.isContainSpeciality(this.favouriteSpeciality[i].tar)) {
+//                int lowerNum = 0;
+//                for (int j = 0; j < this.favouriteSpeciality[i].tar.Features.length; j++) {
+//                    if (this.favouriteSpeciality[i].tar.Features[j] - this.expectationToSpeciality[j] > 0) {
+//                        lowerNum++;
+//                    }
+//                }
+//                int tag = random.nextInt(5);
+//                if (tag <= lowerNum) unacceptableNum++;
+//            }
+//        }
+////        double tag =  Math.sin(unacceptableNum*Math.PI/10);
+//        double tag = 1/(1+Math.pow(Math.E,-unacceptableNum));
+//        double tmp = random.nextDouble();
+//        return tmp < tag;
         Random random = new Random();
-        int unacceptableNum = 0;
-        for (int i = 0; i < this.numOfFavouriteSpeciality; i++) {
-            if (!team.isContainSpeciality(this.favouriteSpeciality[i].tar)) {
-                int lowerNum = 0;
-                for (int j = 0; j < this.favouriteSpeciality[i].tar.Features.length; j++) {
-                    if (this.favouriteSpeciality[i].tar.Features[j] - this.expectationToSpeciality[j] > 0) {
-                        lowerNum++;
-                    }
+        int unbearableNum = 0;
+        for (int i = 0; i < team.specialities.size(); i++) {
+            Speciality tmp = team.specialities.get(i);
+            boolean isContain = false;
+            for (int j = 0; j < this.numOfFavouriteSpeciality; j++) {
+                if (tmp.name.equals(this.favouriteSpeciality[j].tar.name)) {
+                    isContain = true;
+                    break;
                 }
-                int tag = random.nextInt(5);
-                if (tag <= lowerNum) unacceptableNum++;
+            }
+
+
+            if (!isContain) {
+                float sum = 0;
+                for (int j = 0; j < this.expectationToSpeciality.length; j++) {
+                    sum += tmp.Features[j] - this.expectationToSpeciality[j];
+                }
+                if (sum < 0) unbearableNum++;
             }
         }
-        double tag =  Math.sin(unacceptableNum*Math.PI/10);
-        double tmp = random.nextDouble();
-        return tmp < tag;
+        int tag = random.nextInt(team.specialities.size());
+        return tag < unbearableNum;
     }
 
     public void abortTeam() {
